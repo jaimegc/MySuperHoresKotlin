@@ -1,0 +1,119 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'shot'
+
+private static Properties loadMarvelProperties() {
+    Properties props = new Properties()
+    props.load(new FileInputStream("./app/marvel.properties"))
+    props
+}
+
+private static checkMarvelProperties() {
+    new File("./app/marvel.properties").exists()
+}
+
+static def getPublicMarvelKey() {
+    if (checkMarvelProperties()) {
+        Properties props = loadMarvelProperties()
+        return props['MARVEL_PUBLIC_KEY']
+    }
+    "null"
+}
+
+static def getPrivateMarvelKey() {
+    if (checkMarvelProperties()) {
+        Properties props = loadMarvelProperties()
+        return props['MARVEL_PRIVATE_KEY']
+    }
+    "null"
+}
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "com.kotlin.mysuperheroeskotlin"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "MARVEL_PUBLIC_KEY", getPublicMarvelKey()
+        buildConfigField "String", "MARVEL_PRIVATE_KEY", getPrivateMarvelKey()
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+configurations {
+    ktlint
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:design:$support_version"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+
+    ktlint 'com.github.shyiko:ktlint:0.9.0'
+
+    // Kotlin & Anko
+    implementation "org.jetbrains.anko:anko-common:$anko_version"
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // Kodein
+    implementation 'com.github.salomonbrys.kodein:kodein:4.1.0'
+    implementation 'com.github.salomonbrys.kodein:kodein-core:4.1.0'
+    implementation 'com.github.salomonbrys.kodein:kodein-android:4.1.0'
+    implementation 'com.github.salomonbrys.kodein:kodein-conf:4.1.0'
+
+    implementation 'org.funktionale:funktionale-either:1.1'
+    implementation 'com.karumi:marvelapiclient:0.0.4'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'co.metalab.asyncawait:asyncawait:1.0.0'
+
+    // Testing
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    testCompile "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
+    // Mockito core replaced by inline (https://android.jlelse.eu/quickly-solve-mocking-with-kotlin-551372c285f4)
+    //androidTestCompile 'org.mockito:mockito-core:2.10.0'
+    testCompile "org.mockito:mockito-inline:2.16.0"
+    androidTestCompile 'org.mockito:mockito-android:2.9.0'
+    testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    androidTestCompile ('com.android.support.test.espresso:espresso-core:3.0.1') {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+
+    androidTestCompile ('com.facebook.testing.screenshot:core:0.4.2') {
+        exclude group: 'com.crittercism.dexmaker', module: 'dexmaker'
+        exclude group: 'com.crittercism.dexmaker', module: 'dexmaker-dx'
+    }
+
+    androidTestCompile('com.github.tmurakami:dexopener:0.12.0') {
+        exclude group: 'com.android.support.test', module: 'runner'
+    }
+}
+
+shot {
+    appId = 'com.kotlin.mysuperheroeskotlin'
+}
+
+task ktlint(type: JavaExec) {
+    main = "com.github.shyiko.ktlint.Main"
+    classpath = configurations.ktlint
+    args "src/**/*.kt"
+}
+
+check.dependsOn ktlint
+
+task ktlintFormat(type: JavaExec) {
+    main = "com.github.shyiko.ktlint.Main"
+    classpath = configurations.ktlint
+    args "-F", "src/**/*.kt"
+}

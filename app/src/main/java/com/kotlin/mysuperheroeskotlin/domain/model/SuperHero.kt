@@ -1,0 +1,8 @@
+package com.kotlin.mysuperheroeskotlin.domain.model
+
+data class SuperHero(
+        val id: String,
+        val name: String,
+        val photo: String? = null,
+        val isAvenger: Boolean,
+        val description: String)

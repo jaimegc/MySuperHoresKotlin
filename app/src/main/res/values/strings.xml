@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MySuperHeroesKotlin</string>
+    <string name="public_key">192edf9bfe5dd1ffffa75419634ffbae</string>
+    <string name="private_key">f471acf25cda387d44515d5638873b6b621cb9b4</string>
+
+    <string name="error_not_internet_message">Not internet connection</string>
+    <string name="error_superhero_not_found_message">The superhero does not exist</string>
+    <string name="error_unknown_message">¯\\\\_(ツ)_/¯</string>
+    <string name="error_invalid_credentials">You need set valid marvel credentials</string>
+</resources>
